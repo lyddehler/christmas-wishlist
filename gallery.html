@@ -1,22 +1,56 @@
+<!-- gallery.html (Dynamic Google Sheets Gallery) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Wishlist Gallery (Static)</title>
+<title>Wishlist Gallery</title>
 <style>
-  body { font-family: Arial, sans-serif; max-width:700px; margin:40px auto; }
-  .card { padding:16px; margin:12px 0; background:#f2f2f2; border-radius:8px; }
-  a { text-decoration:none; color:#000; display:block; }
+body { font-family: Arial, sans-serif; max-width:900px; margin:40px auto; }
+#cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; }
+.card { background:#f7f7f7; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); cursor:pointer; transition:.2s; }
+.card:hover { transform:scale(1.03); }
 </style>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+// Load Google Visualization API
+google.charts.load('current', {packages:['corechart']});
+
+
+google.charts.setOnLoadCallback(loadData);
+
+
+function loadData() {
+const sheetURL = "YOUR_GOOGLE_SHEETS_CSV_EXPORT_URL"; // CSV link
+
+
+fetch(sheetURL)
+.then(response => response.text())
+.then(csv => {
+const rows = csv.split("
+").map(r => r.split(","));
+const header = rows.shift();
+
+
+const nameIndex = header.indexOf("Name");
+
+
+const cardsContainer = document.getElementById("cards");
+rows.forEach((row, i) => {
+const name = row[nameIndex];
+if (!name) return;
+const card = document.createElement("div");
+card.className = "card";
+card.innerHTML = `<strong>${name}</strong>`;
+cardsContainer.appendChild(card);
+});
+});
+}
+</script>
 </head>
 <body>
 <h1>Wishlist Gallery</h1>
-<p><em>Static example with placeholder names.</em></p>
-
-<div class="card"><a href="details.html">Jane Doe</a></div>
-<div class="card"><a href="details.html">Alex Smith</a></div>
-<div class="card"><a href="details.html">Charlie Nguyen</a></div>
-
+<p><em>Auto‑generated from Google Sheets responses.</em></p>
+<div id="cards"></div>
 </body>
 </html>
